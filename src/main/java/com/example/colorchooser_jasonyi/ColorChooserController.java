@@ -8,6 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.text.NumberFormat;
+
 public class ColorChooserController {
     // instance variables for interacting with GUI components
     @FXML private Slider redSlider;
@@ -24,18 +26,14 @@ public class ColorChooserController {
     private int red = 0;
     private int green = 0;
     private int blue = 0;
-    private double alpha = 1.0;
-
+    private double alpha = 1;
     public void initialize() {
         // bind TextField values to corresponding Slider values
-        redTextField.textProperty().bind(
-                redSlider.valueProperty().asString("%.0f"));
-        greenTextField.textProperty().bind(
-                greenSlider.valueProperty().asString("%.0f"));
-        blueTextField.textProperty().bind(
-                blueSlider.valueProperty().asString("%.0f"));
-        alphaTextField.textProperty().bind(
-                alphaSlider.valueProperty().asString("%.2f"));
+
+        redTextField.textProperty().bindBidirectional(redSlider.valueProperty(), NumberFormat.getNumberInstance());
+        greenTextField.textProperty().bindBidirectional(greenSlider.valueProperty(), NumberFormat.getNumberInstance());
+        blueTextField.textProperty().bindBidirectional(blueSlider.valueProperty(), NumberFormat.getNumberInstance());
+        alphaTextField.textProperty().bindBidirectional(alphaSlider.valueProperty(), NumberFormat.getNumberInstance());
 
         // listeners that set Rectangle's fill based on Slider changes
         redSlider.valueProperty().addListener(
@@ -78,5 +76,63 @@ public class ColorChooserController {
                     }
                 }
         );
+        redTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                redSlider.setValue(0);
+            } else {
+                try {
+                    red = Integer.parseInt(newValue);
+                    if (red < 0) red = 0;
+                    if (red > 255) red = 255;
+                    redSlider.setValue(red);
+                } catch (NumberFormatException e) {
+                    redTextField.setText(oldValue);
+                }
+            }
+        });
+        greenTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                alphaSlider.setValue(0);
+        }
+            try {
+                green = Integer.parseInt(newValue);
+                if (green < 0) green = 0;
+                if (green > 255) green = 255;
+                greenSlider.setValue(green);
+            } catch (NumberFormatException e) {
+                greenTextField.setText(oldValue);
+            }
+        });
+
+        blueTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                blueSlider.setValue(0);
+            } else {
+                try {
+                    blue = Integer.parseInt(newValue);
+                    if (blue < 0) blue = 0;
+                    if (blue > 255) blue = 255;
+                    blueSlider.setValue(blue);
+                } catch (NumberFormatException e) {
+                    blueTextField.setText(oldValue);
+                }
+            }
+        });
+
+        alphaTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                alphaSlider.setValue(0);
+            } else {
+                try {
+                    alpha = Double.parseDouble(newValue);
+                    if (alpha < 0) alpha = 0;
+                    if (alpha > 1.0) alpha = 1.0;
+                    alphaSlider.setValue(alpha);
+                } catch (NumberFormatException e) {
+                    alphaTextField.setText(oldValue);
+                }
+            }
+        });
     }
+
 }
